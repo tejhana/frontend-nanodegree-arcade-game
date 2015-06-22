@@ -69,7 +69,7 @@ Enemy.prototype.checkCollisions = function(enemy, player) {
   }
 };
 
-//boarder algorithm
+// Colliding formula
 Enemy.prototype.isColliding = function(enemy, player) {
       return ((this.x + SPRITE_WIDTH/2.2) > (player.x) &&
           (this.x) < (player.x + SPRITE_WIDTH/2.2)  &&
