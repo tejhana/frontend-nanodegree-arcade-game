@@ -1,85 +1,190 @@
-// Enemies our player must avoid
-var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
+var gameOver;
+var SPRITE_HEIGHT = 101;
+var SPRITE_WIDTH = 171;
 
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+var WIDTH = 505; //width of the rectangular area
+var HEIGHT = 606; //height of the rectangular area
+
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
 }
 
-/*
-* Enemy.init - handles stuff that happens at the beginning of each game (IE:
-* immediately upon enemy object creation. In this case, we load up the bug image.
-* For everything else related to "building a better bug", see the reset function.
-*/
-Enemy.prototype.init = function () {
-	this.sprite.init();
+//Enemy Code - 
+// Enemies our player must avoid
+var Enemy = function() {
+  // sets position of each enemy
+  this.y = this.setPosition();
+  // Speed in pixels per second
+  this.enemySpeed = getRandomInt(50, 400);
+  // The image/sprite for our enemies, this uses
+  this.sprite = 'images/enemy-bug.png';
 };
+
+
+Enemy.prototype.setPosition = function() {
+  var yArray = [67, 150, 150, 230, 67];
+  //defines each enemies speed and starting location.
+  for (var i=0; i < allEnemies.length; i++) {
+    for (var yIndex in yArray) {
+      this.y = yArray[yIndex];
+      if (i = allEnemies[yIndex]) {
+          i.y = this.y;
+      }
+    }
+  }
+};
+
+// Place enemy objects in an array 
+var allEnemies = [];
+for (i=0; i<=4; i++) {
+  allEnemies[i] = new Enemy();
+}
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function (dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-	if (0 < this.delay) {
-		// At first, this bug is not yet moving. Count down to when it will take off.
-		this.delay -= dt;
-	} else {
-		this.x = this.x + this.speed * dt;
-		if ((board.COLS * board.COL_WIDTH) < this.x) {
-			//Hey! We made it all the way across the board... let's start again...
-			this.reset();
-		}
-	}
+Enemy.prototype.update = function(dt) {
+  // multiply any movement by the dt parameter to ensure
+  // the game runs at the same speed on all computers.
+  if (this.x < WIDTH) {
+    this.x += this.enemySpeed * dt;
+  } else {
+      this.x = getRandomInt(-150, -20);
+  }
+    //checks for collisions
+    this.checkCollisions(this, player);
 };
-}
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
-
-/*
-* Enemy.setSpeed - return a number of pixels per second - the speed at which the
-* bug will appear to crawl across the screen. Currently, this is a pretty sedate
-* one board column width per second.
-*
-* Future enhancments could vary the bug's speed on subsequent runs, just to make
-* the game more challenging.
-*/
-Enemy.prototype.setSpeed = function () {
-	return board.COL_WIDTH; //For now, move a constant column's width per second
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 101, 171);
 };
 
-/*
-* Enemy.setDelay - return a number of seconds that this bug will hide off screen
-* before taking another run across the screen. Currently, this is a random number
-* between one and five seconds.
-*
-* Future enhancements might tune this up to make the game more or less challenging.
-*/
-Enemy.prototype.setDelay = function () {
-	return Math.floor(Math.random() * 5) + 1;
+Enemy.prototype.checkCollisions = function(enemy, player) {
+
+  player.x = playerLocation.x;
+  player.y = playerLocation.y;
+
+  if (this.isColliding(this, player)) {
+    player.gameOver();
+  }
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+//bounding box algorithm
+Enemy.prototype.isColliding = function(enemy, player) {
+      return ((this.x + SPRITE_WIDTH/2.2) > (player.x) &&
+          (this.x) < (player.x + SPRITE_WIDTH/2.2)  &&
+          (this.y + SPRITE_HEIGHT/2) > (player.y)  &&
+          (this.y) < (player.y + SPRITE_HEIGHT/2));
+};
 
+//Player Code -
+//starting position for player
+var playerLocation = {
+  x: 200,
+  y: 400
+};
+
+// player class
+var Player = function(x, y) {
+  
+  this.sprite = 'images/char-horn-girl.png';
+};
+
+//prevent player from moving outside of canvas
+//function checkPlayerBounds() {
+Player.prototype.checkPlayerBounds = function() {
+    // Check bounds
+    if (playerLocation.x < 0) {
+      playerLocation.x = 0;
+    }
+    else if (playerLocation.x > 400) {
+        playerLocation.x = 400;
+    }
+
+    if (playerLocation.y < -10) {
+        playerLocation.y = -10;
+    }
+    else if (playerLocation.y > 400) {
+        playerLocation.y = 400;
+    }
+
+    if (playerLocation.y <= 20) {
+       playerLocation.y <= 20;
+       this.gameOver();
+       this.gameEnd();
+    }
+};
+
+// Draw player on the screen
+Player.prototype.render = function() {
+  this.checkPlayerBounds();
+  ctx.drawImage(Resources.get(this.sprite), playerLocation.x, playerLocation.y, 101, 171);
+};
+
+Player.prototype.update = function(dt) {
+     this.sprite = selectedPlayer;
+     //event handler for player movement
+     Player.handleInput = function(keyCode) {
+        if (playerLocation.x <= WIDTH) {
+            switch(keyCode) {
+              case 'left':
+                (playerLocation.x -= 100) * dt;
+                break;
+              case 'right':
+                (playerLocation.x += 100) * dt;
+                break;
+              default:
+                //do nothing
+                break;
+            }
+        }
+        if (playerLocation.y < HEIGHT) {
+            switch(keyCode) {
+              case 'up':
+              (playerLocation.y -= 100) * dt;
+                break;
+              case 'down':
+                (playerLocation.y += 100) * dt;
+                break;
+              default:
+                //do nothing
+                break;
+            }
+        }
+    };
+};
+
+// win
+Player.prototype.gameEnd = function() {
+  ctx.font="45px Arial";
+  ctx.fillStyle = "#981201";
+  ctx.fillText("YOU'RE A WINNER!", 50, 500);
+};
+
+// Game over
+Player.prototype.gameOver = function() {
+  document.getElementById('game-over').style.display = 'block';
+  document.getElementById('game-over-overlay').style.display = 'block';
+  gameOver = true;
+};
+
+// Reset game to original state
+Player.prototype.gameReset = function() {
+  document.getElementById('game-over').style.display = 'none';
+  document.getElementById('game-over-overlay').style.display = 'none';
+  gameOver = false;
+
+  playerLocation.x = 200;
+  playerLocation.y = 400;
+};
 
 // Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var allEnemies = [],
-	enemyIndex,
-	player = new Player();
+var player = new Player(200, 400);
 
-for (enemyIndex = 0; enemyIndex < 4; enemyIndex++) {
-	allEnemies.push(new Enemy());
-};
-
+//default player
+var selectedPlayer = 'images/char-horn-girl.png';
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -91,5 +196,7 @@ document.addEventListener('keyup', function(e) {
         40: 'down'
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);
+    if (!gameOver) {
+      Player.handleInput(allowedKeys[e.keyCode]);
+   }
 });
