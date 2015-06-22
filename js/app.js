@@ -2,8 +2,9 @@ var gameOver;
 var SPRITE_HEIGHT = 101;
 var SPRITE_WIDTH = 171;
 
-var WIDTH = 505; //game width
-var HEIGHT = 606; //game height
+//Game dimensions
+var WIDTH = 505; 
+var HEIGHT = 606;
 
 
 function getRandomInt(min, max) {
@@ -87,7 +88,7 @@ var playerLocation = {
 // player class
 var Player = function(x, y) {
   
-  this.sprite = 'images/char-horn-girl.png';
+  this.sprite = 'images/char-boy.png';
 };
 
 //prevent player from moving outside of canvas
