@@ -2,8 +2,8 @@ var gameOver;
 var SPRITE_HEIGHT = 101;
 var SPRITE_WIDTH = 171;
 
-var WIDTH = 505; //width of the rectangular area
-var HEIGHT = 606; //height of the rectangular area
+var WIDTH = 505; //game width
+var HEIGHT = 606; //game height
 
 
 function getRandomInt(min, max) {
@@ -13,9 +13,8 @@ function getRandomInt(min, max) {
 //Enemy Code - 
 // Enemies our player must avoid
 var Enemy = function() {
-  // sets position of each enemy
+
   this.y = this.setPosition();
-  // Speed in pixels per second
   this.enemySpeed = getRandomInt(50, 400);
   // The image/sprite for our enemies, this uses
   this.sprite = 'images/enemy-bug.png';
@@ -24,7 +23,7 @@ var Enemy = function() {
 
 Enemy.prototype.setPosition = function() {
   var yArray = [67, 150, 150, 230, 67];
-  //defines each enemies speed and starting location.
+  //enemies speed and location.
   for (var i=0; i < allEnemies.length; i++) {
     for (var yIndex in yArray) {
       this.y = yArray[yIndex];
@@ -51,7 +50,7 @@ Enemy.prototype.update = function(dt) {
   } else {
       this.x = getRandomInt(-150, -20);
   }
-    //checks for collisions
+    //checks collisions
     this.checkCollisions(this, player);
 };
 
@@ -70,7 +69,7 @@ Enemy.prototype.checkCollisions = function(enemy, player) {
   }
 };
 
-//bounding box algorithm
+//boarder algorithm
 Enemy.prototype.isColliding = function(enemy, player) {
       return ((this.x + SPRITE_WIDTH/2.2) > (player.x) &&
           (this.x) < (player.x + SPRITE_WIDTH/2.2)  &&
@@ -159,7 +158,7 @@ Player.prototype.update = function(dt) {
 Player.prototype.gameEnd = function() {
   ctx.font="45px Arial";
   ctx.fillStyle = "#981201";
-  ctx.fillText("YOU'RE A WINNER!", 50, 500);
+  ctx.fillText("YOU WIN!", 50, 500);
 };
 
 // Game over
@@ -169,7 +168,7 @@ Player.prototype.gameOver = function() {
   gameOver = true;
 };
 
-// Reset game to original state
+// Reset game 
 Player.prototype.gameReset = function() {
   document.getElementById('game-over').style.display = 'none';
   document.getElementById('game-over-overlay').style.display = 'none';
